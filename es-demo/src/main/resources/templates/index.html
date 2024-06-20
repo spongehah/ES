@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Slider Captcha Demo</title>
+    <link href="lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="disk/slidercaptcha.min.css" rel="stylesheet"/>
+    <style>
+
+        html, body {
+            width: 100%;
+            /*height: 100%;*/
+            aspect-ratio: 6 / 5;
+            overflow-x:hidden;
+            overflow-y:hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .slidercaptcha {
+            margin: 0 auto;
+            width: 314px;
+            height: 286px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.125);
+            margin-top: 40px;
+        }
+
+        .slidercaptcha .card-body {
+            padding: 1rem;
+        }
+
+        .slidercaptcha canvas:first-child {
+            border-radius: 4px;
+            border: 1px solid #e6e8eb;
+        }
+
+        .slidercaptcha.card .card-header {
+            background-image: none;
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .refreshIcon {
+            top: -54px;
+        }
+    </style>
+</head>
+
+<body>
+<!--<div class="container-fluid">-->
+<!--    <div class="form-row">-->
+<!--        <div class="col-12">-->
+<!--            <div class="slidercaptcha card">-->
+<!--                <div class="card-body">-->
+                    <div id="captcha"></div>
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<script src="disk/longbow.slidercaptcha.js"></script>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<script>
+    var captcha = sliderCaptcha({
+        id: 'captcha',
+        width: 280,
+        height: 155,
+        sliderL: 42,
+        sliderR: 9,
+        offset: 5,
+        loadingText: '正在加载中...',
+        failedText: '再试一次',
+        barText: '向右滑动填充拼图',
+        repeatIcon: 'fa fa-redo',
+        remoteUrl: 'http://localhost:8080',
+        onSuccess: function () {  //成功事件
+            console.log("success")
+            var handler = setTimeout(function () {
+                window.clearTimeout(handler);
+            }, 500);
+        },
+        onFail: function () {
+            console.error("fail")
+            var handler = setTimeout(function () {
+                window.clearTimeout(handler);
+            }, 500);
+        },
+        verify: function (startTime, endTime, left, trail, url) {
+            var result = false;
+            $.ajax({
+                url: url,
+                data: {
+                    startTime: startTime,
+                    endTime: endTime,
+                    left: left,
+                    trail: trail
+                },
+                async: false,
+                cache: false,
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                success: function (response) {
+                    result = response;
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+            return result;
+        }
+
+    });
+</script>
+</body>
+
+</html>
